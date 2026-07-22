@@ -1,0 +1,98 @@
+variable "ks_ai_search_definition" {
+  type = object({
+    deploy                     = optional(bool, true)
+    name                       = optional(string)
+    enable_diagnostic_settings = optional(bool, true)
+    diagnostic_settings = optional(map(object({
+      name                                     = optional(string, null)
+      log_categories                           = optional(set(string), [])
+      log_groups                               = optional(set(string), ["allLogs"])
+      metric_categories                        = optional(set(string), ["AllMetrics"])
+      log_analytics_destination_type           = optional(string, "Dedicated")
+      workspace_resource_id                    = optional(string, null)
+      storage_account_resource_id              = optional(string, null)
+      event_hub_authorization_rule_resource_id = optional(string, null)
+      event_hub_name                           = optional(string, null)
+      marketplace_partner_resource_id          = optional(string, null)
+    })), {})
+    sku                           = optional(string, "standard")
+    local_authentication_enabled  = optional(bool, true)
+    network_rule_bypass_option    = optional(string, "None")
+    partition_count               = optional(number, 1)
+    public_network_access_enabled = optional(bool, false)
+    replica_count                 = optional(number, 2)
+    semantic_search_sku           = optional(string, "standard")
+    tags                          = optional(map(string))
+    role_assignments = optional(map(object({
+      role_definition_id_or_name             = string
+      principal_id                           = string
+      description                            = optional(string, null)
+      skip_service_principal_aad_check       = optional(bool, false)
+      condition                              = optional(string, null)
+      condition_version                      = optional(string, null)
+      delegated_managed_identity_resource_id = optional(string, null)
+      principal_type                         = optional(string, null)
+    })), {})
+    enable_telemetry = optional(bool, true)
+  })
+  default     = {}
+  description = <<DESCRIPTION
+Configuration object for the Azure AI Search service to be created as part of the enterprise and public knowledge services.
+
+- `deploy` - (Optional) Deploy the AI Search service. Default is true.
+- `name` - (Optional) The name of the AI Search service. If not provided, a name will be generated.
+- `enable_diagnostic_settings` - (Optional) Whether diagnostic settings are enabled. Default is true.
+- `diagnostic_settings` - (Optional) Map of diagnostic settings configurations for the AI Search service. The map key is deliberately arbitrary to avoid issues where map keys may be unknown at plan time.
+  - `name` - (Optional) The name of the diagnostic setting.
+  - `log_categories` - (Optional) Set of log categories to enable. Default is an empty set.
+  - `log_groups` - (Optional) Set of log groups to enable. Default is ["allLogs"].
+  - `metric_categories` - (Optional) Set of metric categories to enable. Default is ["AllMetrics"].
+  - `log_analytics_destination_type` - (Optional) The destination type for Log Analytics. Default is "Dedicated".
+  - `workspace_resource_id` - (Optional) Resource ID of the Log Analytics workspace.
+  - `storage_account_resource_id` - (Optional) Resource ID of the storage account for diagnostics.
+  - `event_hub_authorization_rule_resource_id` - (Optional) Resource ID of the Event Hub authorization rule.
+  - `event_hub_name` - (Optional) Name of the Event Hub.
+  - `marketplace_partner_resource_id` - (Optional) Resource ID of the marketplace partner resource.
+- `sku` - (Optional) The SKU of the AI Search service. Default is "standard".
+- `local_authentication_enabled` - (Optional) Whether local authentication is enabled. Default is true.
+- `network_rule_bypass_option` - (Optional) Whether trusted Azure services can access a network restricted AI Search service. Possible values are "None" and "AzureServices". Default is "None".
+- `partition_count` - (Optional) The number of partitions for the search service. Default is 1.
+- `public_network_access_enabled` - (Optional) Whether public network access is enabled. Default is false.
+- `replica_count` - (Optional) The number of replicas for the search service. Default is 2.
+- `semantic_search_sku` - (Optional) The SKU for semantic search capabilities. Default is "standard".
+- `tags` - (Optional) Map of tags to assign to the AI Search service.
+- `role_assignments` - (Optional) Map of role assignments to create on the AI Search service. The map key is deliberately arbitrary to avoid issues where map keys may be unknown at plan time.
+  - `role_definition_id_or_name` - The role definition ID or name to assign.
+  - `principal_id` - The principal ID to assign the role to.
+  - `description` - (Optional) Description of the role assignment.
+  - `skip_service_principal_aad_check` - (Optional) Whether to skip AAD check for service principal.
+  - `condition` - (Optional) Condition for the role assignment.
+  - `condition_version` - (Optional) Version of the condition.
+  - `delegated_managed_identity_resource_id` - (Optional) Resource ID of the delegated managed identity.
+  - `principal_type` - (Optional) Type of the principal (User, Group, ServicePrincipal).
+- `enable_telemetry` - (Optional) Whether telemetry is enabled for the AI Search module. Default is true.
+DESCRIPTION
+
+  validation {
+    condition     = contains(["None", "AzureServices"], var.ks_ai_search_definition.network_rule_bypass_option)
+    error_message = "The network_rule_bypass_option must be one of: 'None', 'AzureServices'."
+  }
+}
+
+variable "ks_bing_grounding_definition" {
+  type = object({
+    deploy = optional(bool, true)
+    name   = optional(string)
+    sku    = optional(string, "G1")
+    tags   = optional(map(string))
+  })
+  default     = {}
+  description = <<DESCRIPTION
+Configuration object for the Bing Grounding service to be created as part of the enterprise and public knowledge services.
+
+- `deploy` - (Optional) Deploy the Bing Ground service. Default is true.
+- `name` - (Optional) The name of the Bing Grounding service. If not provided, a name will be generated.
+- `sku` - (Optional) The SKU of the Bing Grounding service. Default is "G1".
+- `tags` - (Optional) Map of tags to assign to the Bing Grounding service.
+DESCRIPTION
+}
