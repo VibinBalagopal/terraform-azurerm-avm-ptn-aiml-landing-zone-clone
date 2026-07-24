@@ -293,7 +293,9 @@ module "application_gateway" {
   enable_telemetry                   = var.enable_telemetry
   http2_enable                       = var.app_gateway_definition.http2_enable
   probe_configurations               = var.app_gateway_definition.probe_configurations
-  public_ip_name                     = "${local.application_gateway_name}-pip"
+  public_ip_address_configuration = {
+    public_ip_name = "${local.application_gateway_name}-pip"
+  }
   redirect_configuration             = var.app_gateway_definition.redirect_configuration
   rewrite_rule_set                   = var.app_gateway_definition.rewrite_rule_set
   role_assignments                   = local.application_gateway_role_assignments
