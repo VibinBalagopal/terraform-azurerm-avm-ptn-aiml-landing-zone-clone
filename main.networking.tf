@@ -211,16 +211,22 @@ module "azure_bastion" {
   version = "0.9.0"
   count   = !var.flag_platform_landing_zone && var.bastion_definition.deploy ? 1 : 0
 
-  location            = azurerm_resource_group.this.location
-  name                = local.bastion_name
-  resource_group_name = var.bastion_definition.resource_group_name != null ? var.bastion_definition.resource_group_name : azurerm_resource_group.this.name
-  enable_telemetry    = var.enable_telemetry
+  location        = azurerm_resource_group.this.location
+  name            = local.bastion_name
+  parent_id       = var.bastion_definition.resource_group_name != null ? data.azurerm_resource_group.azure_bastion[0].id : azurerm_resource_group.this.id
+  enable_telemetry = var.enable_telemetry
   ip_configuration = {
     subnet_id = local.subnet_ids["AzureBastionSubnet"]
   }
-  sku   = var.bastion_definition.sku
-  tags  = merge(local.tags, var.bastion_definition.tags != null ? var.bastion_definition.tags : {})
+  sku  = var.bastion_definition.sku
+  tags = merge(local.tags, var.bastion_definition.tags != null ? var.bastion_definition.tags : {})
   zones = var.bastion_definition.zones
+}
+
+data "azurerm_resource_group" "azure_bastion" {
+  count = var.bastion_definition.resource_group_name != null ? 1 : 0
+
+  name = var.bastion_definition.resource_group_name
 }
 
 module "private_dns_zones" {
