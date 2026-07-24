@@ -61,10 +61,10 @@ resource "azurerm_network_security_rule" "this" {
   access                                     = each.value.access
   direction                                  = each.value.direction
   name                                       = each.value.name
-  network_security_group_name                = module.nsgs.resource.name
+  network_security_group_name                = module.nsgs.name
   priority                                   = each.value.priority
   protocol                                   = each.value.protocol
-  resource_group_name                        = module.nsgs.resource.resource_group_name
+  resource_group_name                        = var.nsgs_definition.resource_group_name != null ? var.nsgs_definition.resource_group_name : azurerm_resource_group.this.name
   description                                = try(each.value.description, null)
   destination_address_prefix                 = try(each.value.destination_address_prefix, null)
   destination_address_prefixes               = try(each.value.destination_address_prefixes, null)
