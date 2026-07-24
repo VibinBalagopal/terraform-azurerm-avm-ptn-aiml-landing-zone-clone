@@ -48,9 +48,9 @@ env:
   TF_STATE_CONTAINER_DEFAULT: "tfstate"
   TF_STATE_KEY_DEFAULT: "aiml-landing-zone.tfstate"
   ARM_USE_OIDC: true
-  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID != '' && secrets.AZURE_CLIENT_ID || vars.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID != '' && secrets.AZURE_TENANT_ID || vars.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID != '' && secrets.AZURE_SUBSCRIPTION_ID || vars.AZURE_SUBSCRIPTION_ID }}
 
 jobs:
   # ─── Validate & Format Check ────────────────────────────────────────────────
@@ -68,16 +68,16 @@ jobs:
       - name: Validate deployment configuration
         run: |
           test -d "${{ env.TF_WORKING_DIR }}" || { echo "Working directory not found: ${{ env.TF_WORKING_DIR }}"; exit 1; }
-          test -n "${{ secrets.AZURE_CLIENT_ID }}" || { echo "Missing required secret: AZURE_CLIENT_ID"; exit 1; }
-          test -n "${{ secrets.AZURE_TENANT_ID }}" || { echo "Missing required secret: AZURE_TENANT_ID"; exit 1; }
-          test -n "${{ secrets.AZURE_SUBSCRIPTION_ID }}" || { echo "Missing required secret: AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "${{ env.ARM_CLIENT_ID }}" || { echo "Missing required AZURE_CLIENT_ID (add as secret or variable)"; exit 1; }
+          test -n "${{ env.ARM_TENANT_ID }}" || { echo "Missing required AZURE_TENANT_ID (add as secret or variable)"; exit 1; }
+          test -n "${{ env.ARM_SUBSCRIPTION_ID }}" || { echo "Missing required AZURE_SUBSCRIPTION_ID (add as secret or variable)"; exit 1; }
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
 
       - name: Terraform Format Check
         working-directory: ${{ env.TF_WORKING_DIR }}
@@ -110,16 +110,16 @@ jobs:
       - name: Validate deployment configuration
         run: |
           test -d "${{ env.TF_WORKING_DIR }}" || { echo "Working directory not found: ${{ env.TF_WORKING_DIR }}"; exit 1; }
-          test -n "${{ secrets.AZURE_CLIENT_ID }}" || { echo "Missing required secret: AZURE_CLIENT_ID"; exit 1; }
-          test -n "${{ secrets.AZURE_TENANT_ID }}" || { echo "Missing required secret: AZURE_TENANT_ID"; exit 1; }
-          test -n "${{ secrets.AZURE_SUBSCRIPTION_ID }}" || { echo "Missing required secret: AZURE_SUBSCRIPTION_ID"; exit 1; }
+          test -n "${{ env.ARM_CLIENT_ID }}" || { echo "Missing required AZURE_CLIENT_ID (add as secret or variable)"; exit 1; }
+          test -n "${{ env.ARM_TENANT_ID }}" || { echo "Missing required AZURE_TENANT_ID (add as secret or variable)"; exit 1; }
+          test -n "${{ env.ARM_SUBSCRIPTION_ID }}" || { echo "Missing required AZURE_SUBSCRIPTION_ID (add as secret or variable)"; exit 1; }
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
@@ -224,9 +224,9 @@ jobs:
       - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
