@@ -115,7 +115,7 @@ module "storage_account" {
 
   location                            = azurerm_resource_group.this.location
   name                                = local.genai_storage_account_name
-  resource_group_name                 = azurerm_resource_group.this.name
+  parent_id                           = azurerm_resource_group.this.id
   access_tier                         = var.genai_storage_account_definition.access_tier
   account_kind                        = var.genai_storage_account_definition.account_kind
   account_replication_type            = var.genai_storage_account_definition.account_replication_type
