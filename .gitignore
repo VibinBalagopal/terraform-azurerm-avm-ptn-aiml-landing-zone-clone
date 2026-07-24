@@ -26,6 +26,9 @@ override.tf.json
 # Include override files you do wish to add to version control using negated pattern
 # !example_override.tf
 
+# Allow the example tfvars file to be committed (it contains no secrets)
+!terraform.tfvars.example
+
 # Ignore Terraform lock file
 .terraform.lock.hcl
 

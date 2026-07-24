@@ -1,0 +1,21 @@
+# ============================================================
+# terraform.tfvars.example
+# Copy this file to terraform.tfvars and fill in your values.
+# DO NOT commit terraform.tfvars — it is in .gitignore.
+# ============================================================
+
+# ── Required ─────────────────────────────────────────────────
+location            = "eastus"
+resource_group_name = "rg-aiml-landing-zone"
+
+# ── Optional ──────────────────────────────────────────────────
+name_prefix              = "aiml"          # Max 10 lowercase alphanumeric chars
+enable_telemetry         = true
+flag_platform_landing_zone = true
+
+tags = {
+  environment = "production"
+  workload    = "aiml-landing-zone"
+  managed-by  = "terraform"
+  owner       = "your-team@example.com"
+}
