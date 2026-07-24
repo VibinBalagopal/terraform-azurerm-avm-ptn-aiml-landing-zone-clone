@@ -28,6 +28,10 @@ on:
         description: 'Set to true to run terraform destroy instead of apply'
         required: false
         default: 'false'
+      force_apply:
+        description: 'Set to true to run apply on workflow_dispatch even when plan has no changes'
+        required: false
+        default: 'false'
 
 concurrency:
   group: terraform-${{ github.ref }}
@@ -212,7 +216,10 @@ jobs:
     if: |
       github.ref == 'refs/heads/main' &&
       github.event_name != 'pull_request' &&
-      needs.plan.outputs.plan_exit_code == '2'
+      (
+        needs.plan.outputs.plan_exit_code == '2' ||
+        (github.event_name == 'workflow_dispatch' && github.event.inputs.force_apply == 'true')
+      )
     steps:
       - uses: actions/checkout@v4
 
