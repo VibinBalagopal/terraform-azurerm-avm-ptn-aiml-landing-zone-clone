@@ -142,7 +142,7 @@ module "storage_account" {
 
 module "containerregistry" {
   source  = "Azure/avm-res-containerregistry-registry/azurerm"
-  version = "0.5.1"
+  version = "0.7.0"
   count   = var.genai_container_registry_definition.deploy ? 1 : 0
 
   location            = azurerm_resource_group.this.location
