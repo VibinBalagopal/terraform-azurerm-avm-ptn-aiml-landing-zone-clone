@@ -1,6 +1,6 @@
 module "ai_lz_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.19.0"
+  version = "0.22.2"
   count   = length(var.vnet_definition.existing_byo_vnet) > 0 ? 0 : 1
 
   location      = azurerm_resource_group.this.location
@@ -31,7 +31,7 @@ data "azurerm_virtual_network" "ai_lz_vnet" {
 
 module "byo_subnets" {
   source   = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version  = "0.19.0"
+  version  = "0.22.2"
   for_each = { for k, v in local.deployed_subnets : k => v if length(var.vnet_definition.existing_byo_vnet) > 0 }
 
   # Direct VNet resource id (module not instantiated when BYO is null due to empty for_each)
@@ -46,7 +46,7 @@ module "byo_subnets" {
 
 module "nsgs" {
   source  = "Azure/avm-res-network-networksecuritygroup/azurerm"
-  version = "0.5.1"
+  version = "0.5.2"
 
   location            = azurerm_resource_group.this.location
   name                = local.nsg_name
@@ -92,7 +92,7 @@ resource "azurerm_network_security_rule" "this" {
 #TODO: Add the platform landing zone flag as a secondary decision point for the hub vnet peering?
 module "hub_vnet_peering" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/peering"
-  version = "0.19.0"
+  version = "0.22.2"
   count   = length(var.vnet_definition.existing_byo_vnet) == 0 && var.vnet_definition.vnet_peering_configuration != null ? 1 : 0
 
   parent_id                            = local.vnet_resource_id
@@ -278,7 +278,7 @@ module "app_gateway_waf_policy" {
 
 module "application_gateway" {
   source  = "Azure/avm-res-network-applicationgateway/azurerm"
-  version = "0.5.2"
+  version = "0.5.3"
   count   = var.app_gateway_definition.deploy ? 1 : 0
 
   backend_address_pools = var.app_gateway_definition.backend_address_pools
